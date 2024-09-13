@@ -1,6 +1,6 @@
 # This is a repository for a FastAPI backend server for the COZIE App.
 
-This repository contains code based on the cozie-apple-backend repository.
+This repository contains code for a fastApi backend server for the [cozie](https://cozie.app/) based on the [cozie-apple-backend](https://github.com/cozie-app/cozie-apple-backend/tree/main) repository.
 We've tried to keep the changes to the lambda functions as minimal as possible.
 
 Deployment is done via docker or podman.
