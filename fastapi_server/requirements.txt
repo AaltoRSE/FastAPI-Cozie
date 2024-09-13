@@ -1,0 +1,6 @@
+influxdb
+numpy
+celery
+fastapi
+pandas
+uvicorn
