@@ -2,8 +2,9 @@ import logging
 import logging.config
 
 logging.config.fileConfig("app/logging.conf", disable_existing_loggers=False)
+logger = logging.getLogger("app")
 
-from fastapi import FastAPI, Security, HTTPException, BackgroundTasks
+from fastapi import FastAPI, Security, HTTPException, BackgroundTasks, Query
 from fastapi.responses import FileResponse
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
@@ -32,19 +33,19 @@ api_key = APIKeyHeader(name="x-api-key")
 
 
 def check_user_read_key(api_key: str = Security(api_key)):
-    if api_key == None or api_key == os.environ["USER_READ_KEY"]:
+    if api_key == None or not api_key == os.environ["USER_READ_KEY"]:
         raise HTTPException(401, "Invalid or missing API key")
     return True
 
 
 def check_user_write_key(api_key: str = Security(api_key)):
-    if api_key == None or api_key == os.environ["USER_WRITE_KEY"]:
+    if api_key == None or not api_key == os.environ["USER_WRITE_KEY"]:
         raise HTTPException(401, "Invalid or missing API key")
     return True
 
 
 def check_researcher_key(api_key: str = Security(api_key)):
-    if api_key == None or api_key == os.environ["RESEARCHER_KEY"]:
+    if api_key == None or not api_key == os.environ["RESEARCHER_KEY"]:
         raise HTTPException(401, "Invalid or missing API key")
     return True
 
@@ -53,16 +54,6 @@ download_folder = os.environ.get("DOWNLOAD_FOLDER")
 # In-memory storage for demonstration purposes
 participants_data = {}
 researchers_data = {}
-
-
-class ResearcherData(BaseModel):
-    researcher_id: str
-    data: Dict
-
-
-class ResearcherRead(BaseModel):
-    researcher_id: str
-    data: Dict
 
 
 @app.post("/participant_write")
@@ -75,9 +66,9 @@ async def participant_write(
 
 @app.post("/participant_read")
 async def participant_read(
-    id_participant: str,
-    id_experiment: str,
-    id_password: str,
+    id_participant: str = Query(..., example="dev01"),
+    id_experiment: str = Query(..., example="myexperiment"),
+    id_password: str = Query(..., example="mypassword"),
     request: Union[List[str], None] = None,
     weeks: int = 1,
     duration: Any = None,
@@ -95,9 +86,9 @@ async def participant_read(
 
 @app.post("/researcher_read")
 async def read_research_data(
-    id_participant: str,
-    id_experiment: str,
-    id_password: str,
+    id_participant: str = Query(..., example="dev01"),
+    id_experiment: str = Query(..., example="myexperiment"),
+    id_password: str = Query(..., example="mypassword"),
     columns: List[str] = [],
     days: int = -1,
     accessOK=Security(check_researcher_key),
@@ -136,5 +127,5 @@ async def load_data(
 
 
 @app.post("/researcher_push")
-async def push_notifications(data: ResearcherData):
+async def push_notifications(data: str, accessOK=Security(check_researcher_key)):
     return push_notifications(data)
