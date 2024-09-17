@@ -11,7 +11,7 @@ class Tags(BaseModel):
 
 # Needs to be updated to the actual models!
 class ParticipantEntry(BaseModel):
-    time: datetime
+    time: str
     measurement: str
     tags: Tags
     fields: Dict[str, Any]

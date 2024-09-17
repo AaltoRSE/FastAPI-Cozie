@@ -20,7 +20,7 @@ from typing import List, Dict, Any, Union
 from .types import ParticipantEntry
 
 # Define the celery broker
-app = Celery("tasks", broker="redis://localhost:6379/0")
+app = Celery("tasks", broker="redis://redis:6379/0")
 
 
 def lambda_handler(payload: Union[ParticipantEntry, List[ParticipantEntry]]):
@@ -31,6 +31,8 @@ def lambda_handler(payload: Union[ParticipantEntry, List[ParticipantEntry]]):
     if isinstance(payload, ParticipantEntry):
         payload = [payload]
 
+    payload = [x.model_dump() for x in payload]
+
     # Split payload and send it to SQS queue
     print("Split up payload")
     num_payloads_in_message = 100
@@ -38,6 +40,7 @@ def lambda_handler(payload: Union[ParticipantEntry, List[ParticipantEntry]]):
     print(f"len(payload): {len(payload)}")
     print(f"num_payloads_in_message: {num_payloads_in_message}")
     for i in range(0, len(payload), num_payloads_in_message):
+
         print("payload")
         print(payload)
         print(

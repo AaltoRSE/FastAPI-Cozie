@@ -11,6 +11,7 @@ from . import influx_prep
 from influxdb import InfluxDBClient
 import pandas as pd
 from .types import PushData
+from fastapi import HTTPException
 
 
 def lambda_handler(event: PushData, context):
@@ -36,7 +37,7 @@ def lambda_handler(event: PushData, context):
 
     # Query DB
     db_name = os.environ["INFLUXDB_NAME"]
-    influx_query = f'SELECT * FROM "cozie-apple"."autogen"."{id_experiment}" WHERE "id_participant"=\'{id_participant}\' AND "id_password"=\'{id_password}\' ORDER BY DESC LIMIT 1'
+    influx_query = f'SELECT * FROM "{os.environ["INFLUXDB_NAME"]}"."autogen"."{id_experiment}" WHERE "id_participant"=\'{id_participant}\' AND "id_password"=\'{id_password}\' ORDER BY DESC LIMIT 1'
     print("query influx: ", influx_query)
 
     result = influx_client.query(influx_query)
@@ -55,7 +56,7 @@ def lambda_handler(event: PushData, context):
         print(f"id_onesignal: {id_onesignal}")
 
     if id_onesignal == "":
-        return {"statusCode": 400, "body": "No valid OneSignal Player ID found."}
+        raise HTTPException(400, "No valid OneSignal Player ID found.")
 
     # Send push notification
     token = os.environ[

@@ -39,7 +39,7 @@ def lambda_handler(
     db_password = os.environ["INFLUXDB_PASSWORD"]
     db_host = "influxdb"
     db_port = 8086
-    db_name = os.environ["INFLUXDB_DB"]
+    db_name = os.environ["INFLUXDB_NAME"]
 
     # Check if participant-id is provided, if not send 400 error
     print("id_participant", id_participant)
@@ -114,10 +114,10 @@ def lambda_handler(
     file, path = tempfile.mkstemp(dir=download_folder, suffix=".zip")
 
     with open(path, "w") as f:
-        my_csv = df.to_csv(
+        df.to_csv(
             f,
             date_format="%Y-%m-%d %H:%M:%S.%f%z",
             compression={"method": "zip", "archive_name": "sample.csv"},
         )
 
-    return {"statusCode": 200, "body": os.path.basename(path)}
+    return os.path.basename(path)

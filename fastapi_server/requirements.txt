@@ -1,6 +1,6 @@
 influxdb
 numpy
-celery
+celery[redis]
 fastapi
 pandas
 uvicorn

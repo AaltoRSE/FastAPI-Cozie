@@ -18,20 +18,7 @@ from .check_type import check_type
 from .add_timestamp_lambda import add_timestamp_lambda
 
 # Configure the logging format
-log_format = "asdf %(levelname)s: %(message)s"
-
-# Set the log level to capture messages at or above the specified level
-root_logger = logging.getLogger()
-
-# Set log level to capture DEBUG, INFO, WARNING, ERROR, CRITICAL messages
-root_logger.setLevel(logging.CRITICAL)
-
-# Create a custom formatter
-formatter = logging.Formatter("%(message)s")
-
-# Get the existing handlers for the root logger and update their format
-for handler in root_logger.handlers:
-    handler.setFormatter(formatter)
+root_logger = logging.getLogger("app")
 
 # influx authentication
 db_user = os.environ["INFLUXDB_USER"]
@@ -48,65 +35,23 @@ def lambda_handler(event: dict):
     client = InfluxDBClient(db_host, db_port, db_user, db_password, db_name)
 
     # Debugging
-    print(
+    root_logger.debug(
         "##################################### Start #####################################"
     )
     logging.debug(pformat(event))
 
-    print("event")
-    print(event)
-
-    # Process SQS message
-    print("Check if Lambda was triggered by SQS")
-    if "Records" in event:
-        print('"Records" in event')
-        print("Length of event['Records']: ", len(event["Records"]))
-        if "messageId" in event["Records"][0]:
-            print('"messageId" in event["Records"][0]')
-            print("Event source: ", event["Records"][0]["eventSource"])
-            print("Event source ARN: ", event["Records"][0]["eventSourceARN"])
-            # print('SQS message body type: ', type(event['Records'][0]['body']))
-            # print('SQS message body: ', event['Records'][0]['body'])
-            payload_list = json.loads(event["Records"][0]["body"])
-            # print('Payload_list type: ', type(payload_list))
-            # print('Payload_list[0]: ', payload_list[0])
-
-            print("Insert payload into DB")
-            print("...")
-    else:
-        print("'body' not found in event")
-        return {
-            "statusCode": 500,
-            "headers": {"Content-Type": "application/json"},
-            "body": "Error: Body not found",
-        }
-
-    # print("-----------------------------------------")
-    # There are some finer point that I don't quite get between a JSON request
-    # using Python package requests and Postman.
-    # payload_list = event['body']
-    # payload_list = json.loads(payload_list)
-    # if type(payload_list) == str:
-    #    payload_list = json.loads(payload_list)
-    # print(" type(payload_list):", type(payload_list))
-    # logging.debug(pformat(payload_list))
-
-    # if type(payload_list)!= list:
-    #    print("Convert payload_list to list")
-    #    payload_list = [payload_list]
-
-    print("Iterate through all paylods in list:")
+    root_logger.debug("Iterate through all paylods in list:")
     payload_counter = 0
-    for payload in payload_list:
+    for payload in event:
         payload_counter += 1
-        print(
+        root_logger.debug(
             f"######################## Payload {payload_counter} ########################"
         )
         if payload_counter == 1:
-            print("*** Payload ***")
-            print("Type: ", type(payload))
-            print(payload)
-        # print("type(payload):", type(payload))
+            root_logger.debug("*** Payload ***")
+            root_logger.debug(f"Type: {type(payload)}")
+            root_logger.debug(payload)
+        # root_logger.debug("type(payload):", type(payload))
         # logging.debug(pformat(payload))
 
         # Check for minimal presence of required fields/tags
@@ -115,23 +60,19 @@ def lambda_handler(event: dict):
             "id_participant",
             "measurement",
         ]  # XXX add id_password, measurement is synonym for id_experiment
-        for key_required in required_keys:
-            if (
-                ("time" not in payload)
-                or ("measurement" not in payload)
-                or ("id_participant" not in payload["tags"])
-            ):
-                print(
-                    f"On or more of the required keys ({required_keys}) were not in the payload"
-                )
-                return {
-                    "statusCode": 500,
-                    "headers": {"Content-Type": "application/json"},
-                    "body": "Error: Required fields or tags ar missing",
-                }
+        if (
+            ("time" not in payload)
+            or ("measurement" not in payload)
+            or ("id_participant" not in payload["tags"])
+        ):
+            root_logger.error(
+                f"On or more of the required keys ({required_keys}) were not in the payload"
+            )
 
-        print("id_experiment  = ", payload["measurement"])
-        print("id_participant = ", payload["tags"]["id_participant"])
+        root_logger.debug(
+            f"id_experiment  = {payload['measurement']}",
+        )
+        root_logger.debug(f"id_participant = {payload['tags']['id_participant']}")
 
         # Check value types in payload
         payload = check_type(payload)
@@ -146,31 +87,23 @@ def lambda_handler(event: dict):
         payload = add_timestamp_lambda(payload, timestamp_lambda)
 
         # Debug print
-        # print("type(payload):", type(payload))
+        # root_logger.debug("type(payload):", type(payload))
         # logging.debug(pformat(payload))
 
         # Convert payload back to json
         json_body = [payload]
 
-        # print("json.dumps(json_body):")
+        # root_logger.debug("json.dumps(json_body):")
         # logging.debug(json.dumps(json_body))
 
         try:
             feedback = client.write_points(
                 json_body, batch_size=5000
             )  # write to InfluxDB
-            print("Client write: ", feedback)
+            root_logger.debug(f"Client write done {feedback}")
         except Exception as e:
-            print("InfluxDBServerError:", e)
+            root_logger.error(e)
 
-    return_data = {
-        "statusCode": 200,
-        "headers": {"Content-Type": "application/json"},
-        "body": "Success",
-    }
-
-    print(return_data)
-    print(
+    root_logger.debug(
         "##################################### END #####################################"
     )
-    return return_data

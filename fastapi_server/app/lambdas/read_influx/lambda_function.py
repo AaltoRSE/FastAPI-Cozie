@@ -15,6 +15,8 @@ import os
 from .valid_votes import keep_valid_votes
 from .types import ParticipantRequest, DEFAULT_WEEKS, REQUESTABLE_PARAMETERS
 
+from typing import Any, Union, List
+
 # import timezonefinder
 
 # Debugging
@@ -25,11 +27,16 @@ db_user = os.environ["INFLUXDB_USER"]
 db_password = os.environ["INFLUXDB_PASSWORD"]
 db_host = "influxdb"
 db_port = 8086
-db_name = os.environ["INFLUXDB_DB"]
+db_name = os.environ["INFLUXDB_NAME"]
 
 
 def lambda_handler(
-    id_participant, id_experiment, id_password, weeks, duration, context
+    id_participant: str,
+    id_experiment: str,
+    id_password: str,
+    weeks: int,
+    duration: Any,
+    request: Union[List[str], None],
 ):
 
     print("Debugging")
@@ -57,11 +64,10 @@ def lambda_handler(
         weeks = DEFAULT_WEEKS
 
     # Influx client
-    client = InfluxDBClient(
-        db_host, db_port, db_user, db_password, db_name, ssl=True, verify_ssl=True
-    )
+    client = InfluxDBClient(db_host, db_port, db_user, db_password, db_name)
 
     # Query database
+    # TODO: Fix this query and adjust it to the experiment in question
     query_influx = (
         f'SELECT "ws_survey_count", "ws_longitude", "ws_latitude", "ws_timestamp_start" '
         f'FROM "{db_name}"."autogen"."{id_experiment}" '
@@ -76,13 +82,14 @@ def lambda_handler(
 
     response_body = dict()
 
+    # TODO: UPDATE According to the study
     if len(result) < 1:
         # Handle empty result set
         response_body["ws_survey_count_valid"] = "0"
         response_body["ws_survey_count_invalid"] = "0"
         response_body["ws_timestamp_survey_last"] = "-"
     else:
-
+        # TODO: UPDATE According to the study
         # Convert result from database to dataframe
         df = pd.DataFrame.from_dict(result[id_experiment])
         # Convert 'time' column to datetime-index
@@ -124,9 +131,10 @@ def lambda_handler(
 
     # Remove parameters that were not requested
     request_parameters = []
-    if "request" in event["queryStringParameters"]:
+    if not request == None:
+        print(request)
         for parameter in REQUESTABLE_PARAMETERS:
-            if parameter not in event["queryStringParameters"]["request"]:
+            if parameter not in request:
                 print("pop ", parameter)
                 response_body.pop(parameter)
 
