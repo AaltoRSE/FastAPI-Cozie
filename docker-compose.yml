@@ -61,6 +61,9 @@ services:
       INFLUXDB_PASSWORD: ${INFLUXDB_PASSWORD}
       ONESIGNAL_TOKEN: ${ONESIGNAL_TOKEN}
       ONESIGNAL_APP_ID: ${ONESIGNAL_APP_ID}
+      USER_WRITE_KEY: ${USER_WRITE_KEY}
+      USER_READ_KEY: ${USER_READ_KEY}
+      RESEARCHER_KEY: ${RESEARCHER_KEY}
     networks:
       - cozie-network
     depends_on:
