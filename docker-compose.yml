@@ -32,8 +32,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ${CERTIFICATE_FOLDER}:/ssl
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${CERTIFICATE_FOLDER}:/ssl:ro
     depends_on:
       - cozie-app
     networks:
