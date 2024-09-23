@@ -22,7 +22,7 @@ from .lambdas.researcher_push.lambda_function import (
 )
 
 import os
-
+import json
 from .setup import setup_db
 
 setup_db()
@@ -70,7 +70,7 @@ async def participant_read(
     id_participant: str = Query(..., example="dev01"),
     id_experiment: str = Query(..., example="myexperiment"),
     id_password: str = Query(..., example="mypassword"),
-    request: Union[List[str], None] = Query(..., example=REQUESTABLE_PARAMETERS),
+    request: str = Query(..., example=str(REQUESTABLE_PARAMETERS)),
     weeks: int = 1,
     duration: Any = None,
     access=Security(check_user_read_key),
@@ -81,7 +81,7 @@ async def participant_read(
         id_password=id_password,
         weeks=weeks,
         duration=duration,
-        request=request,
+        request=json.loads(request),
     )
 
 
