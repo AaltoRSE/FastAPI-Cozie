@@ -11,10 +11,11 @@ from pydantic import BaseModel
 from typing import List, Dict, Union, Any
 
 
+from .lambdas.read_influx.types import REQUESTABLE_PARAMETERS
 from .lambdas.write_queue.lambda_function import lambda_handler as write_queue
 from .lambdas.write_queue.types import ParticipantEntry
 from .lambdas.read_influx.lambda_function import lambda_handler as read_influx
-from .lambdas.read_influx.types import ParticipantRequest
+
 from .lambdas.researcher_read.lambda_function import lambda_handler as researcher_read
 from .lambdas.researcher_push.lambda_function import (
     lambda_handler as push_notifications,
@@ -26,7 +27,7 @@ from .setup import setup_db
 
 setup_db()
 
-app = FastAPI()
+app = FastAPI(title="Cozie-Backend", summary="API for Cozie backend")
 
 
 api_key = APIKeyHeader(name="x-api-key")
@@ -64,12 +65,12 @@ async def participant_write(
     return write_queue(data)
 
 
-@app.post("/participant_read")
+@app.get("/participant_read")
 async def participant_read(
     id_participant: str = Query(..., example="dev01"),
     id_experiment: str = Query(..., example="myexperiment"),
     id_password: str = Query(..., example="mypassword"),
-    request: Union[List[str], None] = None,
+    request: Union[List[str], None] = Query(..., example=REQUESTABLE_PARAMETERS),
     weeks: int = 1,
     duration: Any = None,
     access=Security(check_user_read_key),
