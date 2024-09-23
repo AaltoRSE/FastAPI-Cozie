@@ -30,7 +30,7 @@ def lambda_handler(payload: Union[ParticipantEntry, List[ParticipantEntry]]):
     # Single timestamp payloads (dicts) need to be put into a list
     if isinstance(payload, ParticipantEntry):
         payload = [payload]
-
+    print(payload)
     payload = [x.model_dump() for x in payload]
 
     # Split payload and send it to SQS queue
