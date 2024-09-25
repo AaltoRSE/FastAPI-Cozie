@@ -90,9 +90,9 @@ async def participant_read(
 async def read_research_data(
     id_participant: str = Query(..., example="Cozie_Aalto_10"),
     id_experiment: str = Query(..., example="Cozie_Aalto"),
-    id_password: str = Query(..., example="Password_Aalto"),
+    id_password: str = Query(..., example="Password_Cozie"),
     columns: List[str] = Query(default=[]),
-    days: int = -1,
+    days: int = 5,
     accessOK=Security(check_researcher_key),
 ):
     dlID = researcher_read(
