@@ -111,7 +111,13 @@ def lambda_handler(
     print(df)
 
     # Convert to CSV
-    file, path = tempfile.mkstemp(dir=download_folder, suffix=".h5")
-    df.to_hdf(path, key="df", mode="w")
+    file, path = tempfile.mkstemp(dir=download_folder, suffix=".zip")
+
+    with open(path, "w") as f:
+        df.to_csv(
+            f,
+            date_format="%Y-%m-%d %H:%M:%S.%f%z",
+            compression={"method": "zip", "archive_name": f"sample.csv"},
+        )
 
     return os.path.basename(path)
