@@ -73,6 +73,7 @@ async def participant_read(
     duration: Any = None,
     access=Security(check_user_read_key),
 ):
+    logger.info(request)
     return read_influx(
         id_participant=id_participant,
         id_experiment=id_experiment,
