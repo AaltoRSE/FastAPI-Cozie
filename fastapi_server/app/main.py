@@ -62,6 +62,7 @@ async def participant_write(
     data: Union[ParticipantEntry, List[ParticipantEntry]],
     accessOK=Security(check_user_write_key),
 ):
+
     return write_queue(data)
 
 
@@ -90,7 +91,9 @@ async def read_research_data(
     id_participant: str = Query(..., example="dev01"),
     id_experiment: str = Query(..., example="myexperiment"),
     id_password: str = Query(..., example="mypassword"),
-    columns: List[str] = [],
+    columns: List[str] = Query(
+        ..., example='["q_preference_thermal","q_preference_noise"]'
+    ),
     days: int = -1,
     accessOK=Security(check_researcher_key),
 ):
