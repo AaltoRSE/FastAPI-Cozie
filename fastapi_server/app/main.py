@@ -68,7 +68,7 @@ async def participant_read(
     id_participant: str = Query(..., example="dev01"),
     id_experiment: str = Query(..., example="myexperiment"),
     id_password: str = Query(..., example="mypassword"),
-    request: str = Query(..., example=str(REQUESTABLE_PARAMETERS)),
+    request: str = Query(..., example=json.dumps(REQUESTABLE_PARAMETERS)),
     weeks: int = 1,
     duration: Any = None,
     access=Security(check_user_read_key),
