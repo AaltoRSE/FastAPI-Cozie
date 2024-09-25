@@ -38,7 +38,7 @@ def lambda_handler(event: dict):
     root_logger.debug(
         "##################################### Start #####################################"
     )
-    logging.debug(pformat(event))
+    root_logger.debug(pformat(event))
 
     root_logger.debug("Iterate through all paylods in list:")
     payload_counter = 0
