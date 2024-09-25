@@ -111,10 +111,7 @@ def lambda_handler(
     print(df)
 
     # Convert to CSV
-    file, path = tempfile.mkstemp(dir=download_folder, suffix=".hdf5")
-    df.to_hdf(
-        path,
-        key="df",
-    )
+    file, path = tempfile.mkstemp(dir=download_folder, suffix=".h5")
+    df.to_hdf(path, key="df", mode="w")
 
     return os.path.basename(path)
