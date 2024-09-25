@@ -88,9 +88,9 @@ async def participant_read(
 
 @app.post("/researcher_read")
 async def read_research_data(
-    id_participant: str = Query(..., example="dev01"),
-    id_experiment: str = Query(..., example="myexperiment"),
-    id_password: str = Query(..., example="mypassword"),
+    id_participant: str = Query(..., example="Cozie_Aalto_10"),
+    id_experiment: str = Query(..., example="Cozie_Aalto"),
+    id_password: str = Query(..., example="Password_Aalto"),
     columns: List[str] = Query(
         default=[], example='["q_preference_thermal","q_preference_noise"]'
     ),
@@ -98,13 +98,11 @@ async def read_research_data(
     accessOK=Security(check_researcher_key),
 ):
     dlID = researcher_read(
-        {
-            "id_participant": id_participant,
-            "id_experiment": id_experiment,
-            "id_password": id_password,
-            "columns": columns,
-            "days": days,
-        }
+        id_participant=id_participant,
+        id_experiment=id_experiment,
+        id_password=id_password,
+        columns=columns,
+        days=days,
     )
     return {"url": dlID}
 
