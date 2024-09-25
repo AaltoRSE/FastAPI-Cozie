@@ -92,7 +92,7 @@ async def read_research_data(
     id_experiment: str = Query(..., example="myexperiment"),
     id_password: str = Query(..., example="mypassword"),
     columns: List[str] = Query(
-        ..., default=[], example='["q_preference_thermal","q_preference_noise"]'
+        default=[], example='["q_preference_thermal","q_preference_noise"]'
     ),
     days: int = -1,
     accessOK=Security(check_researcher_key),
