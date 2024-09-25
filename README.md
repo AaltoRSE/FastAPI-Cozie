@@ -18,6 +18,14 @@ an example file, with all settings is provided as `.env_example`
 
 DO NOT USE THIS FILE IN PRODUCTION!
 
+### Initialization of InfluxDB
+
+To start up the database run the following command once after setting all configuration options:
+
+```
+docker compose -f docker-compose-setup.yml up --build
+```
+
 ## Running the server
 
 After finishing the configuration, run the server using:
