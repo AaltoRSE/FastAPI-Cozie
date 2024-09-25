@@ -23,9 +23,6 @@ from .lambdas.researcher_push.lambda_function import (
 
 import os
 import json
-from .setup import setup_db
-
-setup_db()
 
 app = FastAPI(title="Cozie-Backend", summary="API for Cozie backend")
 
@@ -107,7 +104,7 @@ async def read_research_data(
 
 def remove_file(file_path: str):
     os.remove(file_path)
-    print(f"File {file_path} has been deleted")
+    logger.info(f"File {file_path} has been deleted")
 
 
 @app.post("/load_data/{file_id}")
