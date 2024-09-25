@@ -4,3 +4,4 @@ celery[redis]
 fastapi
 pandas
 uvicorn
+pytables
