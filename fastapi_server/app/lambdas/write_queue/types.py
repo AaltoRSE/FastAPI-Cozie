@@ -5,14 +5,14 @@ from pydantic import BaseModel, Field
 
 class Tags(BaseModel):
     id_onesignal: str = Field(..., example="12345678-1234-1234-1234-123456789012")
-    id_participant: str = Field(..., example="dev01")
-    id_password: str = Field(..., example="mypassword")
+    id_participant: str = Field(..., example="Cozie_Aalto_10")
+    id_password: str = Field(..., example="Password_Cozie")
 
 
 # Needs to be updated to the actual models!
 class ParticipantEntry(BaseModel):
-    time: str = Field(..., example="2022-09-02T05:03:21.066+0800")
-    measurement: str = Field(..., example="myexperiment")
+    time: str = Field(..., example="2042-09-25T05:03:21.066+0800")
+    measurement: str = Field(..., example="Cozie_Aalto")
     tags: Tags
     fields: Dict[str, Any] = Field(
         ...,
