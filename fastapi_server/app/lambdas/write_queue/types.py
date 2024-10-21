@@ -11,7 +11,7 @@ class Tags(BaseModel):
 
 # Needs to be updated to the actual models!
 class ParticipantEntry(BaseModel):
-    time: str = Field(..., example="2042-09-25T05:03:21.066+0800")
+    time: str = Field(..., example="2024-09-25T05:03:21.066+0800")
     measurement: str = Field(..., example="Cozie_Aalto")
     tags: Tags
     fields: Dict[str, Any] = Field(

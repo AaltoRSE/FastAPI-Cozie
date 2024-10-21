@@ -20,16 +20,14 @@ from .add_timestamp_lambda import add_timestamp_lambda
 # Configure the logging format
 root_logger = logging.getLogger("app")
 
-# influx authentication
-db_user = os.environ["INFLUXDB_USER"]
-db_password = os.environ["INFLUXDB_PASSWORD"]
-db_host = "influxdb"
-db_port = 8086
-db_name = os.environ["INFLUXDB_NAME"]
-
 
 def lambda_handler(event: dict):
-
+    # influx authentication
+    db_user = os.environ["INFLUXDB_USER"]
+    db_password = os.environ["INFLUXDB_PASSWORD"]
+    db_host = "influxdb"
+    db_port = 8086
+    db_name = os.environ["INFLUXDB_NAME"]
     # Influx client
     # No need for SSL due to communication within docker network
     client = InfluxDBClient(db_host, db_port, db_user, db_password, db_name)
