@@ -68,19 +68,16 @@ async def participant_read(
     id_participant: str = Query(..., example="Cozie_Aalto_10"),
     id_experiment: str = Query(..., example="Cozie_Aalto"),
     id_password: str = Query(..., example="Password_Cozie"),
-    request: str = Query(..., example=json.dumps(REQUESTABLE_PARAMETERS)),
     weeks: int = 1,
     duration: Any = None,
     access=Security(check_user_read_key),
 ):
-    logger.info(request)
     return read_influx(
         id_participant=id_participant,
         id_experiment=id_experiment,
         id_password=id_password,
         weeks=weeks,
         duration=duration,
-        request=json.loads(request),
     )
 
 
