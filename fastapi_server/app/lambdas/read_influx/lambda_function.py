@@ -128,7 +128,7 @@ def lambda_handler(
     # Remove parameters that were not requested
     response_body = []
     for parameter in REQUESTABLE_PARAMETERS:
-        response_body.append({"label" : REQUEST_LABELS[parameter], "value" : result_information[parameter]}) 
+        response_body.append({"label" : REQUEST_LABELS[parameter], "data" : result_information[parameter]}) 
 
     # Return requested parameters to requestor
     return response_body
