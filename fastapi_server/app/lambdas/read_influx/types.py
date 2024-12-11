@@ -9,6 +9,12 @@ REQUESTABLE_PARAMETERS = [
 ]
 DEFAULT_WEEKS = 100
 
+REQUEST_LABELS = {
+    "ws_survey_count_valid": "Valid Survey Count",
+    "ws_survey_count_invalid": "Invalid Survey Count",
+    "ws_timestamp_survey_last": "Last Watch Survey",
+}
+
 
 class ParticipantData(BaseModel):
     id_experiment: str

@@ -13,7 +13,7 @@ import pandas as pd
 from influxdb import InfluxDBClient
 import os
 from .valid_votes import keep_valid_votes
-from .types import ParticipantRequest, DEFAULT_WEEKS, REQUESTABLE_PARAMETERS
+from .types import ParticipantRequest, DEFAULT_WEEKS, REQUESTABLE_PARAMETERS, REQUEST_LABELS
 
 from typing import Any, Union, List
 
@@ -80,14 +80,14 @@ def lambda_handler(
     result = client.query(query_influx)
     print("result: ", result)
 
-    response_body = dict()
+    result_information = {}
 
     # TODO: UPDATE According to the study
     if len(result) < 1:
         # Handle empty result set
-        response_body["ws_survey_count_valid"] = "0"
-        response_body["ws_survey_count_invalid"] = "0"
-        response_body["ws_timestamp_survey_last"] = "-"
+        result_information["ws_survey_count_valid"] = "0/100"
+        result_information["ws_survey_count_invalid"] = "0"
+        result_information["ws_timestamp_survey_last"] = "-"
     else:
         # TODO: UPDATE According to the study
         # Convert result from database to dataframe
@@ -113,30 +113,26 @@ def lambda_handler(
 
         # Retrieve requested parameters
         # response_body["ws_survey_count"]       = str(df["ws_survey_count"].notna().count())
-        response_body["ws_survey_count_valid"] = str(
+        result_information["ws_survey_count_valid"] = str(
             df["ws_survey_count"].notna().count()
-        )
-        response_body["ws_survey_count_invalid"] = str(
+        ) + "/100"
+        result_information["ws_survey_count_invalid"] = str(
             df["ws_survey_count"].notna().count()
             - df_valid_only["ws_survey_count"].notna().count()
         )
         # response_body["ws_timestamp_survey_last"]= df.index[-1].strftime('%d.%m.%Y - %H:%M')
         # response_body["ws_timestamp_survey_last"]= df.index[-1].tz_localize('UTC').tz_convert(timezone_target).strftime('%d.%m.%Y - %H:%M')
-        response_body["ws_timestamp_survey_last"] = (
+        result_information["ws_timestamp_survey_last"] = (
             df.index[-1].tz_localize("UTC").strftime("%d.%m.%Y - %H:%M")
         )
 
-    print("response_body")
-    print(response_body)
-
     # Remove parameters that were not requested
-    request_parameters = []
+    response_body = []
     if not request == None:
         print(request)
         for parameter in REQUESTABLE_PARAMETERS:
-            if parameter not in request:
-                print("pop ", parameter)
-                response_body.pop(parameter)
+            if parameter in request:
+                response_body.append({"label" : REQUEST_LABELS[parameter], "value" : result_information[parameter]}) 
 
     # Return requested parameters to requestor
     return response_body
