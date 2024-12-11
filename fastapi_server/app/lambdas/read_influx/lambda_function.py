@@ -122,7 +122,7 @@ def lambda_handler(
         # response_body["ws_timestamp_survey_last"]= df.index[-1].strftime('%d.%m.%Y - %H:%M')
         # response_body["ws_timestamp_survey_last"]= df.index[-1].tz_localize('UTC').tz_convert(timezone_target).strftime('%d.%m.%Y - %H:%M')
         result_information["ws_timestamp_survey_last"] = (
-            df.index[-1].tz_localize("UTC").strftime("%d.%m.%Y - %H:%M")
+            df.index[-1].tz_localize("EET").strftime("%d.%m.%Y - %H:%M")
         )
 
     # Remove parameters that were not requested
