@@ -92,7 +92,7 @@ def lambda_handler(
         # Convert result from database to dataframe
         df = pd.DataFrame.from_dict(result[id_experiment])
         # Convert 'time' column to datetime-index
-        df["time"] = pd.to_datetime(df["time"])
+        df["time"] = pd.to_datetime(df["time"], format="ISO8601")
         df["time"] = df["time"].dt.tz_localize(None)
         df.index = df["time"]
         df = df.drop(["time"], axis=1)
